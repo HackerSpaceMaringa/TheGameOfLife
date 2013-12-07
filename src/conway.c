@@ -1,17 +1,39 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
 
-#define LIN 30
-#define COL 100
-
-int matrix[LIN][COL];
-int matrix_att[LIN][COL];
+int LIN, COL;
+int **matrix, **matrix_att;
 
 void initial_state() {
    int i,j;
    for (i=0; i<LIN; i++) {
       for (j=0; j<COL; j++) {
          matrix[i][j] = (i+j)%2;
+      }
+   }
+}
+
+void create_matrix(FILE *file) {
+   int i;
+   matrix = (int **) malloc(sizeof(int) * LIN);
+   matrix_att = (int **) malloc(sizeof(int) * LIN);
+   for (i=0; i<LIN; i++) {
+      matrix[i] = (int *) malloc(sizeof(int) * COL);
+      matrix_att[i] = (int *) malloc(sizeof(int) * COL);
+   }
+}
+
+void read_from_file(FILE *file) {
+   int ch, cont = 0;
+   while (cont < LIN*COL) {
+      ch = fgetc(file);
+      if (ch != '\n' && ch != ' ') {
+         ch -= 48;
+         matrix[cont/COL][cont%COL] = ch;
+         cont++;
+      } else if (ch == '\n') {
+         cont = cont + COL - (cont%COL);
       }
    }
 }
@@ -86,9 +108,14 @@ void copyMat() {
          matrix[i][j] = matrix_att[i][j];
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+   LIN = atoi(argv[2]);
+   COL = atoi(argv[3]);
+   FILE *file = fopen(argv[1], "r");
+   create_matrix(file);
    init();
-   initial_state();
+   //initial_state();
+   read_from_file(file);
    print_matrix();
 
    int i,j;
@@ -104,4 +131,5 @@ int main() {
       system("clear");
       print_matrix();
    }
+
 }
