@@ -117,6 +117,7 @@ int main(int argc, char *argv[]) {
    //initial_state();
    read_from_file(file);
    print_matrix();
+   getchar();
 
    int i,j;
    char x;
